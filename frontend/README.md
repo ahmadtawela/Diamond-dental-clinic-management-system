@@ -1,100 +1,63 @@
-# Diamond — React + Tailwind frontend
+نظام Diamond — واجهة المستخدم (React + Tailwind)
+تطبيق صفحة واحدة (SPA) يغطي الوحدات الـ 5 بالكامل، ومبرمج ليتوافق مع واجهات برمجة التطبيقات (API) الخاصة بـ Laravel التي تم تسليمها مسبقاً. تم بناؤه باستخدام Vite + React Router + Tailwind + Recharts.
 
-A single-page app covering all 5 modules, built against the Laravel API
-delivered earlier. Built with Vite + React Router + Tailwind + Recharts.
-
-## Setup
-
-```bash
+الإعداد والتثبيت (Setup)
+Bash
 npm install
-cp .env.example .env      # point VITE_API_URL at your running Laravel backend
+cp .env.example .env       # قم بتوجيه VITE_API_URL إلى خادم Laravel قيد التشغيل
 npm run dev                # http://localhost:3000
-```
+قم بتسجيل الدخول باستخدام حساب المشرف الافتراضي (admin) عبر (admin@diamond-clinic.test / password)، أو بأي مستخدم قمت بإنشائه عبر مُهئ بيانات النظام (Seeder) أو صفحة المستخدمين (Users page).
 
-Log in with the seeded admin (`admin@diamond-clinic.test` / `password`), or
-any user you create via the backend seeder / Users page.
-
-## Structure
-
-```
+هيكلية المشروع (Structure)
 src/
-  api/client.js            axios instance — attaches the bearer token, redirects to
-                            /login on 401
-  context/AuthContext.jsx  login/logout state, current user + role
-  context/LocaleContext.jsx English/Arabic translations, locale formatting, and RTL
+  api/client.js            نسخة Axios — ترفق رمز المصادقة (Bearer token)، وتعيد توجيه
+                           المستخدم إلى /login عند خطأ 401
+  context/AuthContext.jsx  إدارة حالة تسجيل الدخول/الخروج، المستخدم الحالي + الدور (Role)
+  context/LocaleContext.jsx ترجمات الإنجليزية/العربية، تنسيق اللغات، ودعم الاتجاه من اليمين ليسار (RTL)
   components/
-    Layout.jsx              responsive, toggleable sidebar + language switch
-    ProtectedRoute.jsx      route guard (auth + optional role restriction)
-    ui.jsx                  shared Button/Input/Select/Card/Badge/Modal/EmptyState
+    Layout.jsx             شريط جانبي متجاوب وقابل للطي + زر تبديل اللغة
+    ProtectedRoute.jsx     حارس المسارات (المصادقة + قيود الأدوار الاختيارية)
+    ui.jsx                 مكونات مشتركة: زر، حقل إدخال، قائمة منسدلة، بطاقة، شارة، نافذة منقطعة (Modal)، حالة فارغة
   pages/
     Login.jsx
-    ReceptionistDashboard.jsx daily appointment overview and front-desk shortcuts
-    patients/PatientsList.jsx    module 1 — search, register, archive
-    patients/PatientDetail.jsx   modules 1, 3, 4 — tabs: overview & medical
-                                 history, dental chart, treatment plans &
-                                 visits & prescriptions, billing & insurance
-    appointments/AppointmentsPage.jsx   module 2 — daily schedule, booking,
-                                        status changes
-    reports/ReportsPage.jsx      module 5 — revenue chart, patient stats (admin)
-    users/UsersPage.jsx          module 5 — user & role management (admin)
-```
+    ReceptionistDashboard.jsx نظرة عامة على المواعيد اليومية واختصارات مكتب الاستقبال
+    patients/PatientsList.jsx    الوحدة 1 — البحث، التسجيل، الأرشفة
+    patients/PatientDetail.jsx   الوحدات 1، 3، 4 — تبويبات: نظرة عامة والتاريخ الطبي،
+                                 مخطط الأسنان، خطط العلاج والزيارات والروشتات (الوصايا الطبية)،
+                                 الفواتير والتأمين
+    appointments/AppointmentsPage.jsx    الوحدة 2 — الجدول اليومي، الحجز،
+                                        تغيير الحالات
+    reports/ReportsPage.jsx      الوحدة 5 — رسم بياني للإيرادات، إحصائيات المرضى (للمشرفين فقط)
+    users/UsersPage.jsx          الوحدة 5 — إدارة المستخدمين والأدوار (للمشرفين فقط)
+الوحدات المرتبطة بالمريض (التاريخ الطبي، مخطط الأسنان، خطط العلاج، الزيارات، الروشتات، الفواتير، التأمين، المرفقات) توجد داخل تبويبات ضمن صفحة تفاصيل المريض (PatientDetail). يمكن التبديل بين اللغتين الإنجليزية (اتجاه اليسار لليمين LTR) والعربية (اتجاه اليمين لليسار RTL)؛ يتم حفظ تفضيل اللغة في المتصفح، وتتبع تواريخ وأرقام التنسيقات اللغة المختارة. يمكن طي الشريط الجانبي ليصبح نافذة منبثقة (Overlay) على الشاشات الصغيرة.
 
-Patient-centric modules (medical history, dental chart, treatment plans,
-visits, prescriptions, invoices, insurance, attachments) live in tabs inside
-`PatientDetail`. The app can be switched between English/LTR and Arabic/RTL;
-the language preference is saved in the browser and date/number formatting
-follows the selected locale. The sidebar can be toggled and becomes an overlay
-on small screens.
+موظفو الاستقبال يهبطون على لوحة تحكم مخصصة ويمكنهم الوصول إلى أساسيات المريض، المواعيد، الفواتير، المدفوعات، والتأمين. أما مخططات الأسنان وخطط العلاج فهي متاحة لموظفي الاستقبال كعرض للقراءة فقط (Read-only). ولا يمكن لموظفي الاستقبال الوصول إلى: التاريخ الطبي، التشخيصات، الزيارات، الروشتات، المرفقات، التقارير/الإحصائيات، وإدارة المستخدمين. الأطباء لا يمكنهم رؤية الفواتير؛ بينما تظل التقارير وإدارة المستخدمين حكراً على المشرفين (Admin) فقط.
 
-Receptionists land on a dedicated dashboard and can access patient basics,
-appointments, invoices, payments, and insurance. Dental charts and treatment
-plans are available to receptionists as read-only views. Medical history,
-diagnoses, visits, prescriptions, attachments, reports/statistics, and user
-management are not available to receptionists. Doctors do not see billing;
-reports and user management remain admin-only.
+إضافات أخرى فوق النسخة الأصلية:
+تعديل المريض (Edit patient) — أيقونة القلم بجوار اسم المريض تفتح نفس نموذج التسجيل ممتلئاً مسبقاً، عبر الرابط PUT /patients/{id}.
 
-Also included, on top of the original build:
-- **Edit patient** — pencil icon next to the patient's name opens the same
-  form as registration, pre-filled, `PUT /patients/{id}`.
-- **Archive / reactivate** — button next to the status badge,
-  `PATCH /patients/{id}/archive`.
-- **Edit user** — pencil icon per row on the Users page, `PUT /users/{id}`.
-- **Insurance** — its own section in "Billing & insurance": link a patient to
-  an insurance company/policy, and submit an insurance claim against an
-  invoice (computes company/patient split from the policy's coverage %).
-- **X-ray/photo uploads** — a small upload form in "Treatment & visits"
-  (`POST /patients/{id}/attachments`, multipart), with thumbnails and an
-  in-page lightbox preview for images (non-images still open in a new tab).
-- **Pagination** on the patients list — "Showing X–Y of Z" with Previous/Next,
-  driven by Laravel's paginator response.
-- **Calendar month view** for appointments, alongside the original day view —
-  toggle between them; clicking a day in month view jumps to that day's
-  schedule. The backend returns every appointment in the range for this (not
-  paginated) when `from`/`to` are both supplied.
-- **Printing** — a Print button on invoices and on each prescription opens a
-  formatted, letterhead-branded print window (`src/utils/print.js`).
+الأرشفة / إعادة التفعيل (Archive / reactivate) — زر بجوار شارة الحالة، عبر الرابط PATCH /patients/{id}/archive.
 
-## Access control in the UI
+تعديل المستخدم (Edit user) — أيقونة قلم لكل صف في صفحة المستخدمين، عبر الرابط PUT /users/{id}.
 
-The sidebar and patient tabs are filtered by role, and protected routes are
-guarded in the frontend. This is a UX convenience, not the real security
-boundary: Laravel's `role:` middleware enforces API access. The receptionist
-patient-detail response also omits clinical relations, and clinical write,
-diagnosis, prescription, reporting, and administration endpoints return 403
-for that role.
+التأمين (Insurance) — قسم خاص به ضمن "الفواتير والتأمين": ربط المريض بشركة تأمين/بوليصة، وتقديم مطالبة تأمين ضد فاتورة (يحسب نسبة التحمل بين الشركة والمريض بناءً على نسبة التغطية في البوليصة).
 
-## What's light-depth here (same spirit as the backend)
+تحميل الأشعة السينية / الصور (X-ray/photo uploads) — نموذج تحميل مصغر في قسم "العلاج والزيارات" عبر الرابط (POST /patients/{id}/attachments، متعدد الأجزاء multipart)، مع صور مصغرة (Thumbnails) وعرض معاينة من نوع Lightbox للصور داخل الصفحة (الملفات غير الصور تفتح في تبويب جديد).
 
-- No form library (React Hook Form / Zod) — plain `useState` + inline
-  validation error display from the API's 422 response.
-- No global state manager — React Context for auth, plain `useState`/`useEffect`
-  per page for data fetching.
-- PDF/document attachments still just open in a new tab (no in-app PDF
-  viewer) — only images get the lightbox treatment.
-- Laravel feature tests cover receptionist access boundaries
-  (`php artisan test --filter=ReceptionistPermissionsTest`).
+الصفحات (Pagination) في قائمة المرضى — نظام "عرض X إلى Y من Z" مع زري السابق/التالي، مدعوم بنظام التقسيم (Paginator) الخاص بـ Laravel.
 
-## Next
+عرض التقويم الشهري للمواعيد، إلى جانب العرض اليومي الأصلي — تبديل بينهما؛ النقر على أي يوم في عرض الشهر ينتقل مباشرة لجدول ذلك اليوم. يعيد الخادم جميع المواعيد ضمن النطاق المطلوب لهذا الغرض (بدون تقسيم صفحات paginated) عندما يتم توفير كل من from و to.
 
-Ready to move on to running/deploying this, or want anything else added
-first?
+الطباعة (Printing) — زر طباعة على الفواتير وعلى كل روشتة يفتح نافذة طباعة منسقة وتحمل العلامة التجارية للعيادة (src/utils/print.js).
+
+التحكم في الصلاحيات في واجهة المستخدم (Access control in the UI)
+تم تصفية الشريط الجانبي وتبويبات المرضى بناءً على الدور (Role)، كما يتم حراسة المسارات المحمية في الواجهة الأمامية. هذه تعتبر ميزة لتحسين تجربة المستخدم (UX) وليست الجدار الأمني الحقيقي: حيث أن وسيط الأمان (Middleware) role: في Laravel هو ما يفرض الوصول الفعلي للـ API. كما أن استجابة تفاصيل المريض الخاصة بموظف الاستقبال تتخطى البيانات السريرية، وطلبات الكتابة السريرية، والتشخيص، والروشتة، والتقارير، ونقاط نهاية الإدارة تُرجع خطأ 403 لهذا الدور.
+
+ما هو الخفيف في البناء (ب نفس فلسفة الباك إند)
+لا توجد مكتبة نماذج (مثل React Hook Form أو Zod) — تم الاعتماد على useState العادي + عرض أخطاء التحقق المضمنة من استجابة الـ API التي ترجع رمز 422.
+
+لا يوجد مدير حالة عام (Global state manager) — تم استخدام React Context للمصادقة فقط، مع useState/useEffect العادية لكل صفحة لجلب البيانات.
+
+مرفقات المستندات أو ملفات PDF تفتح فقط في تبويب جديد (بدون عارض PDF داخل التطبيق) — الصور فقط هي التي تحصل على ميزة المعاينة (Lightbox).
+
+اختبارات ميزات Laravel تغطي حدود صلاحيات موظف الاستقبال (php artisan test --filter=ReceptionistPermissionsTest).
